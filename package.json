@@ -1,6 +1,6 @@
 {
-  "name": "headless-byteball",
-  "description": "Byteball headless wallet",
+  "name": "headless-byteball-plib",
+  "description": "Byteball headless wallet (Partido Libertario P-LIB)",
   "author": "Byteball",
   "version": "0.1.9",
   "main": "start.js",
@@ -12,11 +12,11 @@
   ],
   "license": "MIT",
   "repository": {
-    "url": "git://github.com/byteball/headless-byteball.git",
+    "url": "git://github.com/dmmartinez/headless-byteball.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/byteball/headless-byteball/issues"
+    "url": "https://github.com/dmmartinez/headless-byteball/issues"
   },
   "browser": {
     "request": "browser-request",
