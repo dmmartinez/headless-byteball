@@ -13,6 +13,7 @@ var ecdsaSig = require('byteballcore/signature.js');
 var Mnemonic = require('bitcore-mnemonic');
 var Bitcore = require('bitcore-lib');
 var readline = require('readline');
+var plib = require('./plib/conversionbot.js');
 
 var appDataDir = desktopApp.getAppDataDir();
 var KEYS_FILENAME = appDataDir + '/' + (conf.KEYS_FILENAME || 'keys.json');
@@ -590,6 +591,8 @@ function setupChatEventHandlers(){
 			return console.log('ignoring text from non-control address');
 		handleText(from_address, text);
 	});
+
+	plib.bootstrapplib();
 }
 
 exports.readSingleWallet = readSingleWallet;
