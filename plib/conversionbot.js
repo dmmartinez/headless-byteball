@@ -68,7 +68,7 @@ function handleTextPLIB(from_address, text, onUnknown) {
 
 	function satoshi2libertario(nsatoshis) {// TODO: Sacar de configuración
 		var diroraculo = "test";
-		if (nbytes > MAX_SATOSHIS | nbytes <= 0) {
+		if (nsatoshis > MAX_SATOSHIS | nsatoshis <= 0) {
 			var res = {
 				value: -1,
 				error: "Valor incorrecto. Máximo valor permitido: 0 < valor <=  " + MAX_SATOSHIS + ". Por favor pruebe con "
