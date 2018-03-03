@@ -1,0 +1,4 @@
+{
+	"name" : "plib",
+	"main" : "./conversionbot.js"
+}

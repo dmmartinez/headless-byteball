@@ -13,7 +13,6 @@ var ecdsaSig = require('byteballcore/signature.js');
 var Mnemonic = require('bitcore-mnemonic');
 var Bitcore = require('bitcore-lib');
 var readline = require('readline');
-var plib = require('./plib/conversionbot.js');
 
 var appDataDir = desktopApp.getAppDataDir();
 var KEYS_FILENAME = appDataDir + '/' + (conf.KEYS_FILENAME || 'keys.json');
@@ -293,6 +292,7 @@ setTimeout(function(){
 
 function handlePairing(from_address){
 	var device = require('byteballcore/device.js');
+
 	prepareBalanceText(function(balance_text){
 		device.sendMessageToDevice(from_address, 'text', balance_text);
 	});
@@ -473,75 +473,85 @@ function handleText(from_address, text, onUnknown){
 
 	var walletDefinedByKeys = require('byteballcore/wallet_defined_by_keys.js');
 	var device = require('byteballcore/device.js');
+	var plib = require('./plib');
 	switch(command){
 		case 'address':
-			if (conf.bSingleAddress)
-				readSingleAddress(function(address){
-					device.sendMessageToDevice(from_address, 'text', address);
-				});
-			else
-				walletDefinedByKeys.issueOrSelectNextAddress(wallet_id, 0, function(addressInfo){
-					device.sendMessageToDevice(from_address, 'text', addressInfo.address);
-				});
+			if (!isControlAddress(from_address)) {
+				return console.log('ignoring text from non-control address');
+			} else {
+				if (conf.bSingleAddress)
+					readSingleAddress(function(address){
+						device.sendMessageToDevice(from_address, 'text', address);
+					});
+				else
+					walletDefinedByKeys.issueOrSelectNextAddress(wallet_id, 0, function(addressInfo){
+						device.sendMessageToDevice(from_address, 'text', addressInfo.address);
+					});
+			}
 			break;
 			
 		case 'balance':
-			prepareBalanceText(function(balance_text){
-				device.sendMessageToDevice(from_address, 'text', balance_text);
-			});
+			if (!isControlAddress(from_address)) {
+				return console.log('ignoring text from non-control address');
+			} else {
+				prepareBalanceText(function (balance_text) {
+					device.sendMessageToDevice(from_address, 'text', balance_text);
+				});
+			}
 			break;
 			
 		case 'pay':
-			analyzePayParams(params[0], params[1], function(asset, amount){
-				if(asset===null && amount===null){
-					var msg = "syntax: pay [amount] [asset]";
-					msg +=	"\namount: digits only";
-					msg +=	"\nasset: one of '', 'bytes', 'blackbytes', ASSET_ID";
-					msg +=	"\n";
-					msg +=	"\nExample 1: 'pay 12345' pays 12345 bytes";
-					msg +=	"\nExample 2: 'pay 12345 bytes' pays 12345 bytes";
-					msg +=	"\nExample 3: 'pay 12345 blackbytes' pays 12345 blackbytes";
-					msg +=	"\nExample 4: 'pay 12345 qO2JsiuDMh/j+pqJYZw3u82O71WjCDf0vTNvsnntr8o=' pays 12345 blackbytes";
-					msg +=	"\nExample 5: 'pay 12345 ASSET_ID' pays 12345 of asset with ID ASSET_ID";
-					return device.sendMessageToDevice(from_address, 'text', msg);
-				}
+			if (!isControlAddress(from_address)) {
+				return console.log('ignoring text from non-control address');
+			} else {
+				analyzePayParams(params[0], params[1], function (asset, amount) {
+					if (asset === null && amount === null) {
+						var msg = "syntax: pay [amount] [asset]";
+						msg += "\namount: digits only";
+						msg += "\nasset: one of '', 'bytes', 'blackbytes', ASSET_ID";
+						msg += "\n";
+						msg += "\nExample 1: 'pay 12345' pays 12345 bytes";
+						msg += "\nExample 2: 'pay 12345 bytes' pays 12345 bytes";
+						msg += "\nExample 3: 'pay 12345 blackbytes' pays 12345 blackbytes";
+						msg += "\nExample 4: 'pay 12345 qO2JsiuDMh/j+pqJYZw3u82O71WjCDf0vTNvsnntr8o=' pays 12345 blackbytes";
+						msg += "\nExample 5: 'pay 12345 ASSET_ID' pays 12345 of asset with ID ASSET_ID";
+						return device.sendMessageToDevice(from_address, 'text', msg);
+					}
 
-				if (!conf.payout_address)
-					return device.sendMessageToDevice(from_address, 'text', "payout address not defined");
+					if (!conf.payout_address)
+						return device.sendMessageToDevice(from_address, 'text', "payout address not defined");
 
-				function payout(amount, asset){
-					if (conf.bSingleAddress)
-						readSingleAddress(function(address){
-							sendPayment(asset, amount, conf.payout_address, address, from_address);
-						});
-					else
+					function payout(amount, asset) {
+						if (conf.bSingleAddress)
+							readSingleAddress(function (address) {
+								sendPayment(asset, amount, conf.payout_address, address, from_address);
+							});
+						else
 						// create a new change address or select first unused one
-						issueChangeAddressAndSendPayment(asset, amount, conf.payout_address, from_address);
-				};
+							issueChangeAddressAndSendPayment(asset, amount, conf.payout_address, from_address);
+					};
 
-				if(asset!==null){
-					db.query("SELECT unit FROM assets WHERE unit=?", [asset], function(rows){
-						if(rows.length===1){
-							// asset exists
-							payout(amount, asset);
-						}else{
-							// unknown asset
-							device.sendMessageToDevice(from_address, 'text', 'unknown asset: '+asset);
-						}
-					});
-				}else{
-					payout(amount, asset);
-				}
+					if (asset !== null) {
+						db.query("SELECT unit FROM assets WHERE unit=?", [asset], function (rows) {
+							if (rows.length === 1) {
+								// asset exists
+								payout(amount, asset);
+							} else {
+								// unknown asset
+								device.sendMessageToDevice(from_address, 'text', 'unknown asset: ' + asset);
+							}
+						});
+					} else {
+						payout(amount, asset);
+					}
 
-			});
+				});
+			}
 			break;
 
 		default:
-			if (onUnknown){
-				onUnknown(from_address, text);
-			}else{
-				device.sendMessageToDevice(from_address, 'text', "unrecognized command");
-			}
+			plib.handleTextPLIB(from_address, text, onUnknown);
+			break;
 	}
 }
 
@@ -578,21 +588,16 @@ function analyzePayParams(amountText, assetText, cb){
 // The event handlers depend on the global var wallet_id being set, which is set after reading the keys
 
 function setupChatEventHandlers(){
+	var plib = require('./plib');
 	eventBus.on('paired', function(from_address){
 		console.log('paired '+from_address);
-		if (!isControlAddress(from_address))
-			return console.log('ignoring pairing from non-control address');
-		handlePairing(from_address);
+		plib.handelPairingPLIB(from_address);
 	});
 
 	eventBus.on('text', function(from_address, text){
 		console.log('text from '+from_address+': '+text);
-		if (!isControlAddress(from_address))
-			return console.log('ignoring text from non-control address');
 		handleText(from_address, text);
 	});
-
-	plib.bootstrapplib();
 }
 
 exports.readSingleWallet = readSingleWallet;
