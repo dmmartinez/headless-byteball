@@ -51,10 +51,10 @@ function handleTextPLIB(from_address, text, onUnknown) {
 	function byte2satoshi(nbytes) {
 		// TODO: Sacar de configuración
 		var diroraculo = "test";
-		if (nbytes > MAX_SATOSHIS | nbytes <= 0) {
+		if (nbytes > MAX_SATOSHIS || nbytes <= 0) {
 			var res = {
 				value: -1,
-				error: "Valor incorrecto. Máximo valor permitido: 0 < valor <=  " + MAX_SATOSHIS + ". Por favor pruebe con "
+				error: "Valor incorrecto. Máximo valor permitido: 0 < valor <=  " + MAX_SATOSHIS
 			}
 			return res;
 		} else {
@@ -68,10 +68,10 @@ function handleTextPLIB(from_address, text, onUnknown) {
 
 	function satoshi2libertario(nsatoshis) {// TODO: Sacar de configuración
 		var diroraculo = "test";
-		if (nsatoshis > MAX_SATOSHIS | nsatoshis <= 0) {
+		if (nsatoshis > MAX_SATOSHIS || nsatoshis <= 0) {
 			var res = {
 				value: -1,
-				error: "Valor incorrecto. Máximo valor permitido: 0 < valor <=  " + MAX_SATOSHIS + ". Por favor pruebe con "
+				error: "Valor incorrecto. Máximo valor permitido: 0 < valor <=  " + MAX_SATOSHIS
 			}
 			return res;
 		} else {
@@ -87,9 +87,14 @@ function handleTextPLIB(from_address, text, onUnknown) {
 	var device = require('byteballcore/device.js');
 	switch (text) {
 		case "lista":
-			device.sendMessageToDevice(from_address, 'text', '[BTC] [XBT] [GBYTE] [MBYTE] [BYTE]');
+			device.sendMessageToDevice(from_address, 'text', '[BTC](BTC) [XBT](XBT) [GBYTE](GBYTE) [MBYTE](MBYTE) [BYTE](BYTE)');
 			break;
 		case "cotización":
+			// TODO: EJEMPLO
+			var res = cotizacionLibertario(1, "BTC", Date.now()); // TODO: Sustituir con oráculo de tiempo
+			device.sendMessageToDevice(from_address, 'text', res.value + " Libertarios por 1 BTC");
+			break;
+		case "BTC":
 			// TODO: EJEMPLO
 			var res = cotizacionLibertario(1, "BTC", Date.now()); // TODO: Sustituir con oráculo de tiempo
 			device.sendMessageToDevice(from_address, 'text', res.value + " Libertarios por 1 BTC");
