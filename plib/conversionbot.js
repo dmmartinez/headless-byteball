@@ -41,7 +41,7 @@ function handleTextPLIB(from_address, text, onUnknown) {
 			default:
 				var res = {
 					value: -1,
-					error: idcripto + " no definido, pruebe uno de las monedas soportadas [lista]"
+					error: idcripto + " no definido, pruebe uno de las monedas soportadas [lista](command:lista)"
 				}
 				return res;
 				break;
@@ -87,7 +87,7 @@ function handleTextPLIB(from_address, text, onUnknown) {
 	var device = require('byteballcore/device.js');
 	switch (text) {
 		case "lista":
-			device.sendMessageToDevice(from_address, 'text', '[BTC](BTC) [XBT](XBT) [GBYTE](GBYTE) [MBYTE](MBYTE) [BYTE](BYTE)');
+			device.sendMessageToDevice(from_address, 'text', '[BTC](command:BTC) [XBT](command:XBT) [GBYTE](command:GBYTE) [MBYTE](command:MBYTE) [BYTE](command:BYTE)');
 			break;
 		case "cotización":
 			// TODO: EJEMPLO
@@ -114,7 +114,7 @@ function handlePairingPLIB(from_address) {
 	device.sendMessageToDevice(from_address, 'text', getMyWelcomeText());
 
 	function getMyWelcomeText() {
-		return "Hola compañero, recuerda: Bitcoin es una burbuja. Prueba [cotización] o [lista] para ir abriendo boca."
+		return "Hola compañero, recuerda: Bitcoin es una burbuja. Prueba [cotización](command:cotización) o [lista](command:lista) para ir abriendo boca."
 	}
 }
 
