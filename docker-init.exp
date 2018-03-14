@@ -1,0 +1,9 @@
+#!/usr/bin/expect
+
+set timeout 20
+
+spawn "./docker-start.sh"
+expect -re {(Please name this device) \[.*\]\:} {send "byteball-plib\r"}
+expect "Passphrase for your private keys:" { send "lololo\r" }
+
+interact

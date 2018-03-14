@@ -1,0 +1,9 @@
+#!/usr/bin/expect
+
+set timeout 20
+
+spawn "./docker-start.sh"
+
+expect "Passphrase:" { send "lololo\r" }
+
+interact

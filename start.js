@@ -49,7 +49,7 @@ function readKeys(onDone){
 		});
 		if (err){ // first start
 			console.log('failed to read keys, will gen');
-			var suggestedDeviceName = require('os').hostname() || 'Headless';
+			var suggestedDeviceName = require('os').hostname() || 'Libertario Headless';
 			rl.question("Please name this device ["+suggestedDeviceName+"]: ", function(deviceName){
 				if (!deviceName)
 					deviceName = suggestedDeviceName;
@@ -90,20 +90,14 @@ function readKeys(onDone){
 				var keys = JSON.parse(data);
 				var deviceTempPrivKey = Buffer(keys.temp_priv_key, 'base64');
 				var devicePrevTempPrivKey = Buffer(keys.prev_temp_priv_key, 'base64');
-
-				// Hack para testar esto en windows/docker
-				var pass = keys.passphrase;
-				var passp = (pass ? pass : passphrase);
-				console.log('pass: ' + passp);
-
 				determineIfWalletExists(function(bWalletExists){
 					if (bWalletExists)
-						onDone(keys.mnemonic_phrase, passp, deviceTempPrivKey, devicePrevTempPrivKey);
+						onDone(keys.mnemonic_phrase, passphrase, deviceTempPrivKey, devicePrevTempPrivKey);
 					else{
 						var mnemonic = new Mnemonic(keys.mnemonic_phrase);
-						var xPrivKey = mnemonic.toHDPrivateKey(passp);
+						var xPrivKey = mnemonic.toHDPrivateKey(passphrase);
 						createWallet(xPrivKey, function(){
-							onDone(keys.mnemonic_phrase, passp, deviceTempPrivKey, devicePrevTempPrivKey);
+							onDone(keys.mnemonic_phrase, passphrase, deviceTempPrivKey, devicePrevTempPrivKey);
 						});
 					}
 				});
