@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "byteballcore": "git+https://github.com/byteball/byteballcore.git",
+    "byteball-data-feed": "git+https://github.com/byteball/byteball-data-feed.git",
     "bitcore-lib": "^0.13.14",
     "bitcore-mnemonic": "~1.0.0",
     "json-rpc2": "^1.0.2"
