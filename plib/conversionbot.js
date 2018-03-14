@@ -120,4 +120,4 @@ function handlePairingPLIB(from_address) {
 
 
 exports.handleTextPLIB = handleTextPLIB;
-exports.handelPairingPLIB = handlePairingPLIB;
+exports.handlePairingPLIB = handlePairingPLIB;

@@ -1,3 +1,5 @@
 docker run --rm --name byteball-plib -v D:\Desarrollo\docker\byteball\config:/root/.config -p 8080:8080 -d byteball-plib:0.1
 
 docker run --rm --name byteball-plib -v D:\Desarrollo\docker\byteball\config:/root/.config -p 8080:8080 -it byteball-plib:0.1 /bin/bash
+
+docker build -t byteball-plib:0.1 .

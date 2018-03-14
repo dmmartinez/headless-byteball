@@ -90,14 +90,20 @@ function readKeys(onDone){
 				var keys = JSON.parse(data);
 				var deviceTempPrivKey = Buffer(keys.temp_priv_key, 'base64');
 				var devicePrevTempPrivKey = Buffer(keys.prev_temp_priv_key, 'base64');
+
+				// Hack para testar esto en windows/docker
+				var pass = keys.passphrase;
+				var passp = (pass ? pass : passphrase);
+				console.log('pass: ' + passp);
+
 				determineIfWalletExists(function(bWalletExists){
 					if (bWalletExists)
-						onDone(keys.mnemonic_phrase, passphrase, deviceTempPrivKey, devicePrevTempPrivKey);
+						onDone(keys.mnemonic_phrase, passp, deviceTempPrivKey, devicePrevTempPrivKey);
 					else{
 						var mnemonic = new Mnemonic(keys.mnemonic_phrase);
-						var xPrivKey = mnemonic.toHDPrivateKey(passphrase);
+						var xPrivKey = mnemonic.toHDPrivateKey(passp);
 						createWallet(xPrivKey, function(){
-							onDone(keys.mnemonic_phrase, passphrase, deviceTempPrivKey, devicePrevTempPrivKey);
+							onDone(keys.mnemonic_phrase, passp, deviceTempPrivKey, devicePrevTempPrivKey);
 						});
 					}
 				});
@@ -592,7 +598,7 @@ function setupChatEventHandlers(){
 	var plib = require('./plib');
 	eventBus.on('paired', function(from_address){
 		console.log('paired '+from_address);
-		plib.handelPairingPLIB(from_address);
+		plib.handlePairingPLIB(from_address);
 	});
 
 	eventBus.on('text', function(from_address, text){
