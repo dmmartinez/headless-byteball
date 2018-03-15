@@ -13,7 +13,6 @@ var ecdsaSig = require('byteballcore/signature.js');
 var Mnemonic = require('bitcore-mnemonic');
 var Bitcore = require('bitcore-lib');
 var readline = require('readline');
-var datafeed = require('byteball-data-feed');
 
 var appDataDir = desktopApp.getAppDataDir();
 var KEYS_FILENAME = appDataDir + '/' + (conf.KEYS_FILENAME || 'keys.json');
